@@ -1,14 +1,25 @@
-// code 
-#include <iostream>
-using namespace std;
 
-int main() {
-    int a = 10;
-    int b = 20;
-    int sum = a + b;
+#ifndef PARKING_AREA_H
+#define PARKING_AREA_H
 
-    cout << "Hello, World!" << endl;
-    cout << "Sum of a and b is: " << sum << endl;
+#include <vector>
 
-    return 0;
-}
+#include "ParkingSlot.h"
+
+class ParkingArea
+{
+private:
+    int areaId;
+    std::vector<ParkingSlot> slots;
+
+public:
+    ParkingArea(int areaId);
+
+    int getAreaId() const;
+
+    void addParkingSlot(const ParkingSlot& slot);
+    ParkingSlot* getFirstAvailableSlot();
+};
+
+#endif  // PARKING_AREA_H
+
