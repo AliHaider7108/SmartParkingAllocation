@@ -13,6 +13,15 @@ const appState = {
     charts: {}
 };
 
+// Debug logging helper
+// NOTE: Your machine does NOT have a debug ingest server listening on 127.0.0.1:7243,
+// so network logging will spam ERR_CONNECTION_REFUSED. Keep logging console-only.
+const __debugLog = (hypothesisId, location, message, data) => {
+  // #region agent log
+  console.log("[SmartParking]", { hypothesisId, location, message, data });
+  // #endregion
+};
+
 // ==================== Utility Functions ====================
 
 /**
@@ -72,6 +81,7 @@ async function apiFetch(endpoint, options = {}) {
     };
 
     try {
+        __debugLog('H1', 'frontend/app.js:apiFetch', 'fetch.start', { url, method: config.method || 'GET' });
         const response = await fetch(url, config);
         const contentType = response.headers.get('content-type');
         
@@ -84,15 +94,20 @@ async function apiFetch(endpoint, options = {}) {
 
         if (!response.ok) {
             const errorMsg = data?.message || data || `Request failed: ${response.status}`;
+            __debugLog('H3', 'frontend/app.js:apiFetch', 'fetch.http_error', { url, status: response.status, errorMsg });
             showError(errorMsg);
             throw new Error(errorMsg);
         }
 
+        __debugLog('H1', 'frontend/app.js:apiFetch', 'fetch.ok', { url, status: response.status });
         return data;
     } catch (error) {
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            showError('Cannot connect to server. Make sure the backend is running on localhost:8080');
-        }
+        __debugLog('H2', 'frontend/app.js:apiFetch', 'fetch.exception', { url, name: error?.name, message: error?.message });
+
+        // Browser "Failed to fetch" usually means server down, CORS blocked, or network refusal.
+        const msg = `Backend unreachable: ${API_BASE}. Start the C++ server on localhost:8080 (and confirm /api/zones loads in browser).`;
+        showError(msg);
+        console.error(msg, error);
         throw error;
     }
 }
@@ -164,6 +179,7 @@ function initNavigation() {
 async function loadDashboard() {
     try {
         showLoading(true);
+        __debugLog('H4', 'frontend/app.js:loadDashboard', 'dashboard.load.start', {});
         
         // Fetch zones
         const zonesData = await apiFetch('/zones');
@@ -207,7 +223,9 @@ async function loadDashboard() {
         // Load recent activity
         loadRecentActivity();
 
+        __debugLog('H4', 'frontend/app.js:loadDashboard', 'dashboard.load.success', { totalZones, totalSlots, occupiedSlots, utilization, activeRequests });
     } catch (error) {
+        __debugLog('H4', 'frontend/app.js:loadDashboard', 'dashboard.load.error', { name: error?.name, message: error?.message });
         console.error('Failed to load dashboard:', error);
     } finally {
         showLoading(false);
@@ -862,6 +880,8 @@ async function init() {
         showLoading(false);
     }, 500);
 
+    __debugLog('H5', 'frontend/app.js:init', 'init.start', { apiBase: API_BASE, origin: window.location.origin });
+
     // Initialize navigation
     initNavigation();
 
@@ -896,6 +916,7 @@ async function init() {
 
     // Load initial page
     switchPage('dashboard');
+    __debugLog('H5', 'frontend/app.js:init', 'init.end', { activePage: 'dashboard' });
 }
 
 // Start app when DOM is ready

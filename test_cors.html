@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>CORS Test for Smart Parking API</h1>
+    <button onclick="testCORS()">Test CORS</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testCORS() {
+            const result = document.getElementById('result');
+            result.textContent = 'Testing...\n';
+
+            try {
+                // Test OPTIONS preflight
+                const optionsResponse = await fetch('http://localhost:8080/api/zones', {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer test'
+                    }
+                });
+                
+                result.textContent += 'OPTIONS Response Status: ' + optionsResponse.status + '\n';
+                result.textContent += 'Access-Control-Allow-Origin: ' + optionsResponse.headers.get('Access-Control-Allow-Origin') + '\n';
+                result.textContent += 'Access-Control-Allow-Methods: ' + optionsResponse.headers.get('Access-Control-Allow-Methods') + '\n';
+                result.textContent += 'Access-Control-Allow-Headers: ' + optionsResponse.headers.get('Access-Control-Allow-Headers') + '\n\n';
+
+                // Test GET request
+                const getResponse = await fetch('http://localhost:8080/api/zones', {
+                    method: 'GET'
+                });
+                
+                result.textContent += 'GET Response Status: ' + getResponse.status + '\n';
+                result.textContent += 'Access-Control-Allow-Origin: ' + getResponse.headers.get('Access-Control-Allow-Origin') + '\n';
+                
+                const data = await getResponse.json();
+                result.textContent += '\nResponse Data:\n' + JSON.stringify(data, null, 2) + '\n';
+                result.textContent += '\n✅ CORS is working correctly!';
+                
+            } catch (error) {
+                result.textContent += '❌ Error: ' + error.message + '\n';
+                result.textContent += 'Stack: ' + error.stack;
+            }
+        }
+    </script>
+</body>
+</html>
