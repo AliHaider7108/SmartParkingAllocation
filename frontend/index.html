@@ -1,384 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Parking System</title>
+    <title>Smart Parking System | NextGen</title>
     <link rel="stylesheet" href="style.css">
-    <!-- GSAP Animation Library -->
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- GSAP for Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
-    <!-- Car Horn Audio -->
-    <audio id="car-horn-audio" preload="none">
-        <source src="assets/sounds/car-horn.mp3" type="audio/mpeg">
-        <source src="assets/sounds/car-horn.wav" type="audio/wav">
-        Your browser does not support the audio element.
-    </audio>
-
-    <!-- High-Quality 3D Car SVG Assets -->
-    <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <!-- Premium 3D Sports Car -->
-            <g id="sports-car">
-                <!-- Dynamic shadows for animation -->
-                <ellipse id="car-shadow" cx="50" cy="95" rx="40" ry="15" fill="rgba(0,0,0,0.4)" opacity="0"/>
-                <ellipse cx="50" cy="90" rx="35" ry="12" fill="rgba(0,0,0,0.3)" opacity="0.6"/>
-
-                <!-- Car Body with Metallic Gradient -->
-                <defs>
-                    <linearGradient id="metallicBody" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
-                        <stop offset="30%" style="stop-color:#f7931e;stop-opacity:1" />
-                        <stop offset="70%" style="stop-color:#ff4757;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#c44569;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="glassRoof" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:0.9" />
-                        <stop offset="100%" style="stop-color:#4682b4;stop-opacity:0.7" />
-                    </linearGradient>
-                    <radialGradient id="headlightGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#87ceeb;stop-opacity:0" />
-                    </radialGradient>
-                </defs>
-
-                <!-- Main Car Body -->
-                <path d="M15,70 Q15,55 25,50 L75,50 Q85,55 85,70 L85,80 Q85,85 80,85 L20,85 Q15,85 15,80 Z"
-                      fill="url(#metallicBody)" stroke="#b91c1c" stroke-width="1.5"/>
-                <path d="M15,70 Q15,55 25,50 L75,50 Q85,55 85,70 L85,80 Q85,85 80,85 L20,85 Q15,85 15,80 Z"
-                      fill="none" stroke="#7f1d1d" stroke-width="0.5" opacity="0.3"/>
-
-                <!-- Car Roof with Glass Effect -->
-                <rect x="28" y="45" width="44" height="18" rx="8" ry="8" fill="url(#glassRoof)" stroke="#2c5aa0" stroke-width="1"/>
-                <rect x="28" y="45" width="44" height="18" rx="8" ry="8" fill="none" stroke="#1e3f73" stroke-width="0.5" opacity="0.4"/>
-
-                <!-- Windshield -->
-                <polygon points="32,45 45,32 55,32 68,45" fill="#87ceeb" opacity="0.8"/>
-                <polygon points="32,45 45,32 55,32 68,45" fill="none" stroke="#2c5aa0" stroke-width="0.8"/>
-                <line x1="50" y1="32" x2="50" y2="45" stroke="#4682b4" stroke-width="0.5" opacity="0.6"/>
-
-                <!-- Wheels with 3D effect and rotation capability -->
-                <g class="wheel-front">
-                    <circle cx="28" cy="82" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
-                    <circle cx="28" cy="82" r="6" fill="#404040" stroke="#333" stroke-width="0.5"/>
-                    <circle cx="28" cy="82" r="2" fill="#666"/>
-                    <!-- Spokes -->
-                    <line x1="28" y1="76" x2="28" y2="88" stroke="#666" stroke-width="1"/>
-                    <line x1="22" y1="82" x2="34" y2="82" stroke="#666" stroke-width="1"/>
-                </g>
-                <g class="wheel-rear">
-                    <circle cx="72" cy="82" r="10" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
-                    <circle cx="72" cy="82" r="6" fill="#404040" stroke="#333" stroke-width="0.5"/>
-                    <circle cx="72" cy="82" r="2" fill="#666"/>
-                    <!-- Spokes -->
-                    <line x1="72" y1="76" x2="72" y2="88" stroke="#666" stroke-width="1"/>
-                    <line x1="66" y1="82" x2="78" y2="82" stroke="#666" stroke-width="1"/>
-                </g>
-
-                <!-- Headlights with glow effect -->
-                <circle cx="20" cy="70" r="4" fill="url(#headlightGlow)"/>
-                <circle cx="20" cy="70" r="2" fill="#fff"/>
-                <circle cx="80" cy="70" r="4" fill="url(#headlightGlow)"/>
-                <circle cx="80" cy="70" r="2" fill="#fff"/>
-
-                <!-- Taillights -->
-                <circle cx="18" cy="75" r="3" fill="#ff4444"/>
-                <circle cx="18" cy="75" r="1.5" fill="#ff8888"/>
-                <circle cx="82" cy="75" r="3" fill="#ff4444"/>
-                <circle cx="82" cy="75" r="1.5" fill="#ff8888"/>
-
-                <!-- Grille -->
-                <rect x="12" y="68" width="6" height="12" rx="1" fill="#1a1a1a"/>
-                <rect x="10" y="70" width="2" height="8" fill="#666"/>
-                <rect x="18" y="70" width="2" height="8" fill="#666"/>
-                <rect x="82" y="68" width="6" height="12" rx="1" fill="#1a1a1a"/>
-                <rect x="88" y="70" width="2" height="8" fill="#666"/>
-                <rect x="80" y="70" width="2" height="8" fill="#666"/>
-
-                <!-- Door handles -->
-                <rect x="45" y="72" width="4" height="1.5" rx="0.5" fill="#666"/>
-                <rect x="51" y="72" width="4" height="1.5" rx="0.5" fill="#666"/>
-
-                <!-- Side mirrors -->
-                <rect x="10" y="52" width="4" height="6" rx="1" fill="#1a1a1a"/>
-                <rect x="86" y="52" width="4" height="6" rx="1" fill="#1a1a1a"/>
-
-                <!-- License plate area -->
-                <rect x="42" y="83" width="16" height="4" rx="1" fill="#fff" stroke="#000" stroke-width="0.5"/>
-                <text id="license-plate" x="50" y="86" text-anchor="middle" font-size="2.5" fill="#000" font-weight="bold">PARK</text>
-
-                <!-- 3D Highlights and Reflections -->
-                <ellipse cx="35" cy="55" rx="12" ry="4" fill="rgba(255,255,255,0.3)"/>
-                <path d="M20,60 Q30,58 40,60 Q50,58 60,60 Q70,58 80,60"
-                      stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
-            </g>
-        </defs>
-    </svg>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <h2>🚗 Smart Parking</h2>
-                <div id="demo-indicator" class="demo-indicator">DEMO MODE</div>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
-                <li><a href="#" class="nav-link" data-page="zones">Zones</a></li>
-                <li><a href="#" class="nav-link" data-page="requests">Requests</a></li>
-                <li><a href="#" class="nav-link" data-page="analytics">Analytics</a></li>
-            </ul>
-            <div class="nav-controls">
-                <button id="mode-toggle" class="btn btn-small">Live Mode</button>
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Dashboard Page -->
-        <div id="dashboard" class="page active">
-            <div class="page-header">
-                <h1>Dashboard</h1>
-                <button class="btn btn-primary" onclick="refreshDashboard()">
-                    <span class="icon">🔄</span> Refresh
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">P</div>
+                <h2>Smart<span class="highlight">Park</span></h2>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-category">MENU</div>
+                <a href="#" class="nav-link active" data-page="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-link" data-page="zones">
+                    <span class="icon">🅿️</span> Parking Zones
+                </a>
+                <a href="#" class="nav-link" data-page="requests">
+                    <span class="icon">📝</span> Requests
+                </a>
+                <a href="#" class="nav-link" data-page="analytics">
+                    <span class="icon">📈</span> Analytics
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span id="system-status-text">System Online</span>
+                </div>
+                <button id="mode-toggle" class="btn-toggle">
+                    <span class="curr-mode">Live Mode</span>
                 </button>
             </div>
+        </aside>
 
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🏢</div>
-                    <div class="stat-content">
-                        <h3 id="total-zones">--</h3>
-                        <p>Total Zones</p>
-                    </div>
-                    <div class="stat-trend" id="zones-trend">+0</div>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Dashboard Overview</h1>
+                    <p id="current-date">October 24, 2026</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🅿️</div>
-                    <div class="stat-content">
-                        <h3 id="occupied-slots">--/--</h3>
-                        <p>Occupied Slots</p>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search vehicle or zone...">
+                        <span class="search-icon">🔍</span>
                     </div>
-                    <div class="stat-trend" id="occupancy-trend">+0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-content">
-                        <h3 id="active-requests">--</h3>
-                        <p>Active Requests</p>
+                    <button class="btn-icon notification-btn">🔔<span class="dot"></span></button>
+                    <div class="user-profile">
+                        <div class="avatar">A</div>
                     </div>
-                    <div class="stat-trend" id="requests-trend">+0</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-content">
-                        <h3 id="utilization">--%</h3>
-                        <p>Utilization</p>
-                    </div>
-                    <div class="stat-trend" id="utilization-trend">+0%</div>
-                </div>
-            </div>
+            </header>
 
-            <!-- Zones Overview -->
-            <div class="content-section">
-                <h2>Zone Overview</h2>
-                <div id="zones-overview" class="zones-grid">
-                    <!-- Zones will be loaded here -->
-                </div>
-            </div>
+            <!-- Dynamic Content Container -->
+            <div id="content-area">
 
-            <!-- Recent Activity -->
-            <div class="content-section">
-                <h2>Recent Activity</h2>
-                <div id="recent-activity" class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon">⏳</div>
-                        <div class="activity-content">
-                            <p>Loading activity...</p>
-                            <small>--</small>
+                <!-- DASHBOARD VIEW -->
+                <div id="dashboard" class="page-view active">
+                    <!-- Stats Overview -->
+                    <div class="stats-grid">
+                        <div class="stat-card glass">
+                            <div class="stat-icon-wrapper blue">
+                                <span class="stat-icon">🏢</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Zones</h3>
+                                <div class="stat-value" id="total-zones">0</div>
+                            </div>
+                            <div class="stat-chart-mini">
+                                <!-- Mini chart canvas or SVG -->
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass">
+                            <div class="stat-icon-wrapper purple">
+                                <span class="stat-icon">🚗</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Occupancy</h3>
+                                <div class="stat-value" id="occupied-slots">0/0</div>
+                            </div>
+                            <div class="stat-metric-bar">
+                                <div class="bar-bg">
+                                    <div class="bar-fill" id="occupancy-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass">
+                            <div class="stat-icon-wrapper orange">
+                                <span class="stat-icon">⏳</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Active Requests</h3>
+                                <div class="stat-value" id="active-requests">0</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card glass">
+                            <div class="stat-icon-wrapper green">
+                                <span class="stat-icon">⚡</span>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Utilization</h3>
+                                <div class="stat-value" id="utilization">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Dashboard Sections -->
+                    <div class="dashboard-layout">
+                        <!-- Left: Live Zone Map -->
+                        <div class="section-card glass zone-map-section">
+                            <div class="card-header">
+                                <h3>Live Parking Map</h3>
+                                <div class="card-actions">
+                                    <span class="legend-item"><span class="dot free"></span> Free</span>
+                                    <span class="legend-item"><span class="dot occupied"></span> Occupied</span>
+                                </div>
+                            </div>
+                            <div id="zones-overview" class="zones-visualizer">
+                                <!-- Dynamic Zone Grid -->
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Recent Activity -->
+                        <div class="section-card glass activity-section">
+                            <div class="card-header">
+                                <h3>Real-time Activity</h3>
+                            </div>
+                            <div id="recent-activity" class="activity-feed custom-scrollbar">
+                                <!-- Activity Items -->
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Zones Page -->
-        <div id="zones" class="page">
-            <div class="page-header">
-                <h1>Parking Zones</h1>
-                <button class="btn btn-primary" onclick="showCreateZoneModal()">
-                    <span class="icon">+</span> Add Zone
-                </button>
-            </div>
+                <!-- ZONES VIEW -->
+                <div id="zones" class="page-view">
+                    <div class="view-header">
+                        <button class="btn-primary glow" onclick="showCreateZoneModal()">+ Add New Zone</button>
+                    </div>
+                    <div id="zones-detailed" class="zones-detailed-grid">
+                        <!-- Detailed Zones -->
+                    </div>
+                </div>
 
-            <div id="zones-detailed" class="zones-detailed">
-                <!-- Detailed zones view will be loaded here -->
-                <div class="loading-state">
-                    <p>Loading zones...</p>
+                <!-- REQUESTS VIEW -->
+                <div id="requests" class="page-view">
+                    <div class="view-header">
+                        <button class="btn-primary glow" onclick="showNewRequestModal()">+ New Request</button>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-filter="all">All</button>
+                            <button class="filter-tab" data-filter="REQUESTED">Pending</button>
+                            <button class="filter-tab" data-filter="ALLOCATED">Active</button>
+                        </div>
+                    </div>
+                    <div class="table-container glass">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Vehicle</th>
+                                    <th>Zone</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requests-table-body">
+                                <!-- Table Rows -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Requests Page -->
-        <div id="requests" class="page">
-            <div class="page-header">
-                <h1>Parking Requests</h1>
-                <button class="btn btn-primary" onclick="showNewRequestModal()">
-                    <span class="icon">+</span> New Request
-                </button>
-            </div>
+                <!-- ANALYTICS VIEW -->
+                <div id="analytics" class="page-view">
+                    <div class="analytics-layout">
+                        <div class="chart-card glass full-width">
+                            <h3>Occupancy Trends (24h)</h3>
+                            <canvas id="occupancyChart"></canvas>
+                        </div>
+                        <div class="chart-card glass">
+                            <h3>Zone Distribution</h3>
+                            <canvas id="zoneDistChart"></canvas>
+                        </div>
+                        <div class="chart-card glass">
+                            <h3>Vehicle Types</h3>
+                            <canvas id="vehicleTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Request Filters -->
-            <div class="filters">
-                <div class="filter-group">
-                    <label>Status:</label>
-                    <select id="status-filter">
-                        <option value="all">All</option>
-                        <option value="REQUESTED">Requested</option>
-                        <option value="ALLOCATED">Allocated</option>
-                        <option value="OCCUPIED">Occupied</option>
-                        <option value="RELEASED">Released</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Search:</label>
-                    <input type="text" id="search-input" placeholder="Vehicle ID...">
-                </div>
             </div>
-
-            <!-- Requests List -->
-            <div id="requests-list" class="requests-grid">
-                <!-- Requests will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Analytics Page -->
-        <div id="analytics" class="page">
-            <div class="page-header">
-                <h1>Analytics</h1>
-                <div class="time-range">
-                    <select id="time-range">
-                        <option value="1h">Last Hour</option>
-                        <option value="24h" selected>Last 24 Hours</option>
-                        <option value="7d">Last Week</option>
-                        <option value="30d">Last Month</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Analytics Cards -->
-            <div class="analytics-grid">
-                <div class="analytics-card">
-                    <h3>Total Requests</h3>
-                    <div class="metric" id="total-requests">--</div>
-                    <div class="trend" id="total-trend">+0%</div>
-                </div>
-                <div class="analytics-card">
-                    <h3>Success Rate</h3>
-                    <div class="metric" id="success-rate">--%</div>
-                    <div class="trend" id="success-trend">+0%</div>
-                </div>
-                <div class="analytics-card">
-                    <h3>Average Duration</h3>
-                    <div class="metric" id="avg-duration">-- min</div>
-                    <div class="trend" id="duration-trend">+0%</div>
-                </div>
-                <div class="analytics-card">
-                    <h3>Cancellation Rate</h3>
-                    <div class="metric" id="cancel-rate">--%</div>
-                    <div class="trend" id="cancel-trend">+0%</div>
-                </div>
-            </div>
-
-            <!-- Analytics Charts -->
-            <div id="analytics-charts" class="analytics-charts">
-                <div class="loading-state">
-                    <p>Loading analytics charts...</p>
-                </div>
-                <!-- Charts will be inserted here by JavaScript -->
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <!-- Modals -->
-    <!-- New Request Modal -->
-    <div id="new-request-modal" class="modal">
-        <div class="modal-content">
+    <div id="create-zone-modal" class="modal-backdrop">
+        <div class="modal-window glass">
             <div class="modal-header">
-                <h3>New Parking Request</h3>
-                <button class="modal-close" onclick="closeModal('new-request-modal')">&times;</button>
+                <h2>Create Parking Zone</h2>
+                <button class="close-btn" onclick="closeModal('create-zone-modal')">×</button>
             </div>
-            <form id="new-request-form" class="modal-body">
+            <form id="create-zone-form">
                 <div class="form-group">
-                    <label for="vehicle-id">Vehicle ID</label>
-                    <input type="text" id="vehicle-id" required placeholder="e.g., CAR001">
+                    <label>Zone ID</label>
+                    <input type="number" id="zone-id" class="glass-input" required>
                 </div>
                 <div class="form-group">
-                    <label for="requested-zone">Preferred Zone</label>
-                    <select id="requested-zone" required>
-                        <option value="">Select Zone</option>
-                        <!-- Zones will be loaded here -->
+                    <label>Capacity</label>
+                    <input type="number" id="zone-capacity" class="glass-input" value="10" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="closeModal('create-zone-modal')">Cancel</button>
+                    <button type="submit" class="btn-primary glow">Create Zone</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="new-request-modal" class="modal-backdrop">
+        <div class="modal-window glass">
+            <div class="modal-header">
+                <h2>New Parking Request</h2>
+                <button class="close-btn" onclick="closeModal('new-request-modal')">×</button>
+            </div>
+            <form id="new-request-form">
+                <div class="form-group">
+                    <label>Vehicle License Plate</label>
+                    <input type="text" id="vehicle-id" class="glass-input" placeholder="e.g. AB-1234" required>
+                </div>
+                <div class="form-group">
+                    <label>Preferred Zone</label>
+                    <select id="requested-zone" class="glass-input" required>
+                        <option value="">Auto-Assign</option>
                     </select>
                 </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('new-request-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Request</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn-ghost" onclick="closeModal('new-request-modal')">Cancel</button>
+                    <button type="submit" class="btn-primary glow">Submit Request</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Create Zone Modal -->
-    <div id="create-zone-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Create New Zone</h3>
-                <button class="modal-close" onclick="closeModal('create-zone-modal')">&times;</button>
-            </div>
-            <form id="create-zone-form" class="modal-body">
-                <div class="form-group">
-                    <label for="zone-id">Zone ID</label>
-                    <input type="number" id="zone-id" required min="1" placeholder="1">
-                </div>
-                <div class="form-group">
-                    <label>Areas</label>
-                    <div id="areas-container">
-                        <div class="area-item">
-                            <input type="number" placeholder="Area ID" min="1" required>
-                            <input type="number" placeholder="Slots" min="1" required>
-                            <button type="button" class="btn btn-small btn-danger" onclick="removeArea(this)">Remove</button>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-small btn-secondary" onclick="addArea()">Add Area</button>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('create-zone-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Zone</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- Audio Elements -->
+    <audio id="car-horn-audio" src="assets/sounds/car-horn.mp3" preload="none"></audio>
+    <audio id="notification-audio" src="assets/sounds/notification.mp3" preload="none"></audio>
 
-    <!-- Toast Notifications -->
-    <div id="toast-container" class="toast-container"></div>
+    <div id="toast-container"></div>
 
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p>Loading Smart Parking System...</p>
-        <div class="loading-text">Initializing 3D Environment</div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>

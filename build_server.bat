@@ -23,7 +23,6 @@ g++ -std=c++17 ^
     AllocateEngine.cpp ^
     RollBackManager.cpp ^
     -Iserver/Crow-master/include ^
-    -I"server\\asio-master\\asio\\include" ^
     -I"server\\asio-master\\include" ^
     -o smart_parking_server.exe ^
     -pthread ^
